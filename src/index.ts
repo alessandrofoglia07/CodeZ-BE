@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
+import authRouter from './routers/auth.js';
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ app.use(
         origin: CLIENT_URL
     })
 );
+
+app.use('/api/v1/auth', authRouter);
 
 await (async () => {
     try {
@@ -34,19 +37,5 @@ await (async () => {
 })();
 
 app.use(express.static('public'));
-
-app.get('/', (req: Request, res: Response) => {
-    type NewResponse = {
-        message: string;
-        env?: string;
-    };
-    const obj: NewResponse = {
-        message: 'Hello world!'
-    };
-    if (process.env.NODE_ENV) {
-        obj.env = process.env.NODE_ENV;
-    }
-    res.json(obj);
-});
 
 app.all('*', (req: Request, res: Response) => res.sendStatus(404));
