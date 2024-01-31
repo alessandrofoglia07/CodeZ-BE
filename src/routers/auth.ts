@@ -43,7 +43,7 @@ router.post('/login', async (req: Request, res: Response) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        return res.status(200).json({ accessToken, refreshToken, message: 'Login successful', email: user.email, username: user.username });
+        return res.status(200).json({ accessToken, refreshToken, message: 'Login successful', email: user.email, username: user.username, userId: user._id });
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
