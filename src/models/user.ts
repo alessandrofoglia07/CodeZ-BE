@@ -52,11 +52,11 @@ const UserSchema = new Schema<UserDocument>(
             type: String,
             validate: profileImgValidator
         },
-        sessions: {
+        projects: {
             type: [
                 {
                     type: SchemaTypes.ObjectId,
-                    ref: 'Session'
+                    ref: 'Project'
                 }
             ],
             default: []

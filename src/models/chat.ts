@@ -3,9 +3,9 @@ import { type ChatDocument } from '../types.js';
 
 const ChatSchema = new Schema<ChatDocument>(
     {
-        session: {
+        project: {
             type: SchemaTypes.ObjectId,
-            ref: 'Session'
+            ref: 'Project'
         },
         messages: {
             type: [
