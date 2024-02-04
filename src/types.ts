@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import { Types, Document } from 'mongoose';
 
 export interface UserDocument extends Document {
@@ -39,4 +40,14 @@ export interface MessageDocument extends Document {
     chat: Types.ObjectId;
     user: Types.ObjectId;
     content: string;
+}
+
+export interface AuthRequest extends Request {
+    /** If verifyUser middleware used, access this with a *non-null assertion operator*
+     * @example
+     * router.get('/', verifyUser, (req: AuthRequest, res: Response) => {
+     *    return res.json({ userId: req.userId! })
+     * });
+     */
+    userId?: string;
 }

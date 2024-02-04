@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
 import authRouter from './routers/auth.js';
+import usersRouter from './routers/users.js';
+import projectsRouter from './routers/projects.js';
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use(
 );
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/projects', projectsRouter);
 
 await (async () => {
     try {
@@ -38,4 +42,4 @@ await (async () => {
 
 app.use(express.static('public'));
 
-app.all('*', (req: Request, res: Response) => res.sendStatus(404));
+app.all('*', (_req: Request, res: Response) => res.sendStatus(404));

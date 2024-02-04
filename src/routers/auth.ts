@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 
 const router = Router();
 
+// TODO: Add email verification
 router.post('/signup', validateCredentials, async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
