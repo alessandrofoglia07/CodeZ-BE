@@ -5,6 +5,7 @@ import { connect } from 'mongoose';
 import authRouter from './routers/auth.js';
 import usersRouter from './routers/users.js';
 import projectsRouter from './routers/projects.js';
+import adminRouter from './routers/admin.js';
 
 dotenv.config();
 
@@ -13,6 +14,12 @@ const app = express();
 const CLIENT_URL = process.env.CLIENT_URL || '*';
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const API_VERSION = process.env.API_VERSION || 'v1';
+const adminEnv = process.env.ADMIN_KEY;
+
+if (!adminEnv) {
+    console.log('No admin environment provided. Make sure to set the ADMIN_KEY environment variable for accessing the admin router.');
+}
 
 app.use(express.json());
 app.use(
@@ -21,9 +28,10 @@ app.use(
     })
 );
 
-app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/projects', projectsRouter);
+app.use(`/api/${API_VERSION}/auth`, authRouter);
+app.use(`/api/${API_VERSION}/users`, usersRouter);
+app.use(`/api/${API_VERSION}/projects`, projectsRouter);
+app.use(`/api/${API_VERSION}/admin`, adminRouter);
 
 await (async () => {
     try {

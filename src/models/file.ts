@@ -8,8 +8,7 @@ const FileSchema = new Schema<FileDocument>(
             required: true
         },
         content: {
-            type: String,
-            default: ''
+            type: String
         },
         type: {
             type: String,
