@@ -4,6 +4,8 @@ import verifyUser from '../middlewares/verifyUser.js';
 import User from '../models/user.js';
 import Project from '../models/project.js';
 import { z } from 'zod';
+import getFilesFromGitHub from '../utils/getFilesFromGitHub.js';
+import { Types } from 'mongoose';
 
 const router = Router();
 
@@ -18,7 +20,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
     return res.json(projects);
 });
 
-router.post('/', async (req: AuthRequest, res: Response) => {
+router.post('/new/empty', async (req: AuthRequest, res: Response) => {
     const { name, description, collaborators } = req.body;
 
     // Validate name, description, and collaborators array
@@ -45,6 +47,55 @@ router.post('/', async (req: AuthRequest, res: Response) => {
             owner: req.userId
         });
 
+        await project.save();
+
+        return res.status(201).json(project);
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+});
+
+router.post('/new/github', async (req: AuthRequest, res: Response) => {
+    const { githubLink, collaborators } = req.body;
+
+    // Validate githubLink
+    const githubLinkSchema = z
+        .string()
+        .url('Invalid URL')
+        .regex(/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/, 'Link must be a GitHub repository');
+    const collaboratorsSchema = z.array(z.string());
+
+    const githubLinkValidation = githubLinkSchema.safeParse(githubLink);
+    const collaboratorsValidation = collaboratorsSchema.safeParse(collaborators);
+
+    if (!githubLinkValidation.success) return res.status(400).json({ message: githubLinkValidation.error.errors[0]?.message });
+    if (!collaboratorsValidation.success) return res.status(400).json({ message: collaboratorsValidation.error.errors[0]?.message });
+
+    // Get files from GitHub repository
+
+    try {
+        const author = githubLink.split('/')[3];
+        const repo = githubLink.split('/')[4].split('.')[0];
+
+        // TODO: get description from GitHub repository
+        const description = `GitHub repository: ${githubLink}`;
+
+        // Initialize new project
+        const project = new Project({
+            name: repo,
+            description,
+            collaborators: collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId],
+            files: [],
+            owner: req.userId
+        });
+
+        await project.save();
+
+        const files = await getFilesFromGitHub(author, repo, project._id);
+
+        // Add files to project
+        project.files = files as unknown as Types.ObjectId[];
         await project.save();
 
         return res.status(201).json(project);
