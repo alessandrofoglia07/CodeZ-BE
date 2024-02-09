@@ -33,6 +33,7 @@ const getFilesFromGitHub = async (author: string, repo: string, projectId: strin
 
             if (!file.download_url) return;
 
+            // TODO: ADD WAY TO MINIMIZE NUMBER OF REQUESTS AND DATA DOWNLOADED IN CASE OF LARGE FILES OR CODEBASES
             const content = (await axios.get(file.download_url)).data.toString();
             const newFile = new File({
                 name: file.name,

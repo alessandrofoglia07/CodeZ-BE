@@ -28,7 +28,7 @@ router.post('/new/empty', async (req: AuthRequest, res: Response) => {
     const nameSchema = z.string().min(1, nameLengthErr).max(30, nameLengthErr);
     const descriptionLengthErr = 'Description must be between 1 and 300 characters long';
     const descriptionSchema = z.string().min(1, descriptionLengthErr).max(300, descriptionLengthErr);
-    const collaboratorsSchema = z.array(z.string());
+    const collaboratorsSchema = z.array(z.string()).optional();
 
     const nameValidation = nameSchema.safeParse(name);
     const descriptionValidation = descriptionSchema.safeParse(description);
@@ -38,11 +38,13 @@ router.post('/new/empty', async (req: AuthRequest, res: Response) => {
     if (!descriptionValidation.success) return res.status(400).json({ message: descriptionValidation.error.errors[0]?.message });
     if (!collaboratorsValidation.success) return res.status(400).json({ message: collaboratorsValidation.error.errors[0]?.message });
 
+    const newCollaborators = collaborators ? (collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId]) : [req.userId];
+
     try {
         const project = new Project({
             name,
             description,
-            collaborators: collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId],
+            collaborators: newCollaborators,
             files: [],
             owner: req.userId
         });
@@ -64,7 +66,7 @@ router.post('/new/github', async (req: AuthRequest, res: Response) => {
         .string()
         .url('Invalid URL')
         .regex(/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/, 'Link must be a GitHub repository');
-    const collaboratorsSchema = z.array(z.string());
+    const collaboratorsSchema = z.array(z.string()).optional();
 
     const githubLinkValidation = githubLinkSchema.safeParse(githubLink);
     const collaboratorsValidation = collaboratorsSchema.safeParse(collaborators);
@@ -72,7 +74,7 @@ router.post('/new/github', async (req: AuthRequest, res: Response) => {
     if (!githubLinkValidation.success) return res.status(400).json({ message: githubLinkValidation.error.errors[0]?.message });
     if (!collaboratorsValidation.success) return res.status(400).json({ message: collaboratorsValidation.error.errors[0]?.message });
 
-    // Get files from GitHub repository
+    const newCollaborators = collaborators ? (collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId]) : [req.userId];
 
     try {
         const author = githubLink.split('/')[3];
@@ -85,7 +87,7 @@ router.post('/new/github', async (req: AuthRequest, res: Response) => {
         const project = new Project({
             name: repo,
             description,
-            collaborators: collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId],
+            collaborators: newCollaborators,
             files: [],
             owner: req.userId
         });
