@@ -12,11 +12,11 @@ const router = Router();
 router.use(verifyUser);
 
 router.get('/', async (req: AuthRequest, res: Response) => {
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.userId).populate('projects');
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
     }
-    const projects = (await user.populate('projects')).projects;
+    const projects = user.projects;
     return res.json(projects);
 });
 
@@ -41,6 +41,9 @@ router.post('/new/empty', async (req: AuthRequest, res: Response) => {
     const newCollaborators = collaborators ? (collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId]) : [req.userId];
 
     try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
         const project = new Project({
             name,
             description,
@@ -50,6 +53,9 @@ router.post('/new/empty', async (req: AuthRequest, res: Response) => {
         });
 
         await project.save();
+
+        user.projects.push(project._id);
+        await user.save();
 
         return res.status(201).json(project);
     } catch (err) {
@@ -77,6 +83,9 @@ router.post('/new/github', async (req: AuthRequest, res: Response) => {
     const newCollaborators = collaborators ? (collaborators.includes(req.userId) ? collaborators : [...collaborators, req.userId]) : [req.userId];
 
     try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
         const author = githubLink.split('/')[3];
         const repo = githubLink.split('/')[4].split('.')[0];
 
@@ -99,6 +108,9 @@ router.post('/new/github', async (req: AuthRequest, res: Response) => {
         // Add files to project
         project.files = files as unknown as Types.ObjectId[];
         await project.save();
+
+        user.projects.push(project._id);
+        await user.save();
 
         return res.status(201).json(project);
     } catch (err) {

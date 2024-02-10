@@ -15,7 +15,7 @@ const CLIENT_URL = process.env.CLIENT_URL || '*';
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const API_VERSION = process.env.API_VERSION || 'v1';
-const adminEnv = process.env.ADMIN_KEY;
+export const adminEnv = process.env.ADMIN_KEY;
 
 if (!adminEnv) {
     console.log('No admin environment provided. Make sure to set the ADMIN_KEY environment variable for accessing the admin router.');
