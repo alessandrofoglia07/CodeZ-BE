@@ -13,19 +13,21 @@ export interface UserDocument extends Document {
 
 export interface ProjectDocument extends Document {
     name: string;
-    description: string;
+    url: string;
     collaborators: Types.ObjectId[];
-    files: Types.ObjectId[];
     chat: Types.ObjectId;
     owner: Types.ObjectId;
+    deltas: Types.ObjectId[];
 }
 
-export interface FileDocument extends Document {
-    name: string;
-    content: string;
-    type: 'file' | 'folder';
-    path: string;
+// TODO: better typing for content editing later on
+export interface DeltaDocument extends Document {
+    type: 'add' | 'delete' | 'edit';
+    filePath: string;
     project: Types.ObjectId;
+    editedContent?: string;
+    addedContent?: string;
+    deletedContent?: string;
 }
 
 // TODO: implement chats later

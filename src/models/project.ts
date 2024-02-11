@@ -7,26 +7,35 @@ const projectSchema = new Schema<ProjectDocument>(
             type: String,
             required: true
         },
-        description: {
-            type: String,
-            required: true
-        },
         collaborators: [
             {
                 type: SchemaTypes.ObjectId,
                 ref: 'User'
             }
         ],
-        files: [
-            {
-                type: SchemaTypes.ObjectId,
-                ref: 'File'
+        url: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (v: string) => {
+                    return /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/.test(v);
+                },
+                message: 'Invalid URL'
             }
-        ],
+        },
         owner: {
             type: SchemaTypes.ObjectId,
             ref: 'User',
             required: true
+        },
+        deltas: {
+            type: [
+                {
+                    type: SchemaTypes.ObjectId,
+                    ref: 'Delta'
+                }
+            ],
+            default: []
         }
     },
     { timestamps: true }

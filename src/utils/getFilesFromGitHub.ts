@@ -1,5 +1,5 @@
 import axios from 'axios';
-import File from '../models/file.js';
+import File from '../models/delta.js';
 import pLimit from 'p-limit';
 
 interface GitHubFile {

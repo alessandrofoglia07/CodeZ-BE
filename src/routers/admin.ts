@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import checkAdmin from '../middlewares/checkAdmin.js';
 import Project from '../models/project.js';
-import File from '../models/file.js';
+import File from '../models/delta.js';
 
 const router = Router();
 
