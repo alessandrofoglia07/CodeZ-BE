@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import User from '../models/user.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.js';
 import { CLIENT_URL, GITHUB_API_URL } from '../index.js';
+import clientLoginUrl from '../utils/clientLoginUrl.js';
 
 const router = Router();
 
@@ -29,13 +30,13 @@ router.get('/github/callback', async (req: Request, res: Response) => {
         // Check if state is valid (if not, the request is likely from a third-party and should abort)
         const storedState = await GithubAuthState.findOne({ state });
         if (!storedState) {
-            return res.redirect(CLIENT_URL! + '?error=state');
+            return res.redirect(CLIENT_URL + '?error=state');
         }
         // Token expires after 10 minutes
         if (storedState.createdAt.getTime() + 600000 < Date.now()) {
             await storedState.deleteOne();
 
-            return res.redirect(CLIENT_URL! + '?error=state');
+            return res.redirect(CLIENT_URL + '?error=state');
         }
         await storedState.deleteOne();
 
@@ -69,7 +70,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
             const accessToken = generateAccessToken(storedUser);
             const refreshToken = generateRefreshToken(storedUser);
 
-            return res.redirect(CLIENT_URL! + `?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+            return res.redirect(clientLoginUrl(storedUser, accessToken, refreshToken));
         }
 
         // If the user doesn't exist, create a new user and redirect to the client with the access token (register and login the user)
@@ -86,10 +87,10 @@ router.get('/github/callback', async (req: Request, res: Response) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        res.redirect(CLIENT_URL! + `?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+        res.redirect(clientLoginUrl(user, accessToken, refreshToken));
     } catch (err) {
         console.log(err);
-        res.redirect(CLIENT_URL! + '?error=auth');
+        res.redirect(CLIENT_URL + '?error=auth');
     }
 });
 
