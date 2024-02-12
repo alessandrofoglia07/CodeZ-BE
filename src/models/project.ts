@@ -1,5 +1,6 @@
 import { Schema, model, SchemaTypes } from 'mongoose';
 import { type ProjectDocument } from '../types.js';
+import { githubUrlRegex } from '../utils/validation.js';
 
 const projectSchema = new Schema<ProjectDocument>(
     {
@@ -18,7 +19,7 @@ const projectSchema = new Schema<ProjectDocument>(
             required: true,
             validate: {
                 validator: (v: string) => {
-                    return /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/.test(v);
+                    return githubUrlRegex.test(v);
                 },
                 message: 'Invalid URL'
             }

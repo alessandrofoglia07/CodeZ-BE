@@ -12,3 +12,5 @@ export const authFormSchema = z.object({
     email: emailSchema,
     password: passwordSchema
 });
+
+export const githubUrlRegex = /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/;

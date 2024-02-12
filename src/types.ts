@@ -1,13 +1,16 @@
 import type { Request } from 'express';
 import { Types, Document } from 'mongoose';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TODO = any;
+
 export interface UserDocument extends Document {
     username: string;
-    email: string;
-    password: string;
+    email?: string;
     profile_img?: string;
     projects: Types.ObjectId[];
     friends: Types.ObjectId[];
+    accessToken: string;
     // settings: Record<string, unknown>; add this later
 }
 
