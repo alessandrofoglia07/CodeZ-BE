@@ -8,9 +8,10 @@ export interface UserDocument extends Document {
     username: string;
     email?: string;
     profile_img?: string;
+    githubId: string;
     projects: Types.ObjectId[];
     friends: Types.ObjectId[];
-    accessToken: string;
+    githubToken: string;
     // settings: Record<string, unknown>; add this later
 }
 
@@ -45,6 +46,13 @@ export interface MessageDocument extends Document {
     chat: Types.ObjectId;
     user: Types.ObjectId;
     content: string;
+}
+
+export interface GitHubAuthStateDocument extends Document {
+    state: string;
+    redirect?: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface AuthRequest extends Request {

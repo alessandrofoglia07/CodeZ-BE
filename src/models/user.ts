@@ -19,6 +19,10 @@ const UserSchema = new Schema<UserDocument>(
             type: String,
             unique: true
         },
+        githubId: {
+            type: String,
+            required: true
+        },
         profile_img: {
             type: String,
             validate: profileImgValidator
@@ -41,7 +45,7 @@ const UserSchema = new Schema<UserDocument>(
             ],
             default: []
         },
-        accessToken: {
+        githubToken: {
             type: String,
             required: true
         }
